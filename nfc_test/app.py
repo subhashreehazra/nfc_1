@@ -16,7 +16,7 @@ def nfc():
 
         def beam(llc):
             snep_client=nfc.snep.SnepClient(llc)
-            snep_client.put_records([ndef.UriRecord('www.google.com')])
+            snep_client.put_records([ndef.UriRecord(uri)])
 
         def connected(llc):
             Thread(target=beam, args=(llc,)).start()
