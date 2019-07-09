@@ -1,9 +1,8 @@
 # try:
 from flask import Flask, flash, redirect, render_template, request, session, abort
 import nfc
-import nfc.snep
 import ndef
-import threading
+from threading import Thread
 from flask import json
 app = Flask(__name__)
 
@@ -13,26 +12,19 @@ def nfc():
         vpa=request['VPA']
         amn=request.form['Amount']
         mer=request.form['Merchant']
-        server = None
         uri="upi://pay?pa="+vpa+"&pn="+mer+"&am="+amn+"&tn=&mam=null&cu=INR"
 
-        def send_ndef_message(llc):
-            sp_record = ndef.SmartposterRecord(uri, 'UPI - Link')
-            nfc.snep.SnepClient(llc).put_records( [sp_record] )
-
-        def startup(llc):
-            global server
-            server = nfc.snep.SnepServer(llc, "urn:nfc:sn:snep")
-            return llc
+        def beam(llc):
+            snep_client=nfc.snep.SnepClient(llc)
+            snep_client.put_records([ndef.UriRecord('www.google.com')])
 
         def connected(llc):
-            server.start()
-            threading.Thread(target=send_ndef_message, args=(llc,)).start()
+            Thread(target=beam, args=(llc,)).start()
             return True
 
         clf = nfc.ContactlessFrontend()
         assert clf.open('ttyS0') is True
-        clf.connect(llcp={'on-startup': startup, 'on-connect': connected})
+        clf.connect(llcp={'on-connect': connected})
         if(clf.connect()):
             return("True") 
 # except ImportError:
