@@ -1,0 +1,37 @@
+
+from flask import Flask, flash, redirect, render_template, request, session, abort
+import nfc
+import ndef
+from threading import Thread
+from flask import json
+import os
+app = Flask(__name__)
+
+@app.route("/")
+def nfc():
+     if request.method == 'POST':
+        
+        os.system('python ndef_url.py -u "http://bing.com"')
+        return "connected"
+#    if request.method == 'POST':
+ #       vpa=request['VPA']
+  #      amn=request.form['Amount']
+   #     mer=request.form['Merchant']
+    #    uri="upi://pay?pa="+vpa+"&pn="+mer+"&am="+amn+"&tn=&mam=null&cu=INR"
+
+"""        def beam(llc):
+            snep_client=nfc.snep.SnepClient(llc)
+            snep_client.put_records([ndef.UriRecord("https://google.com")])
+
+        def connected(llc):
+            Thread(target=beam, args=(llc,)).start()
+            return True
+
+        clf = nfc.ContactlessFrontend()
+        assert clf.open('ttyS0') is True
+        clf.connect(llcp={'on-connect': connected})"""
+
+if __name__ == "__main__":
+    app.run()
+
+
